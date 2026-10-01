@@ -37,9 +37,9 @@ Don't worry about connecting these manually. The skill walks you through everyth
 
 No terminal needed.
 
-### Step 1: Open Claude
+### Step 1: Open Claude Code
 
-Open the Claude Desktop app (or Claude Code, if you already use it).
+Open Claude Code: the Code tab in the Claude desktop app, or type `claude` in your terminal. (This skill renders video on your computer, so it needs Claude Code; a regular chat can't run it.)
 
 ### Step 2: Paste this message
 
