@@ -13,6 +13,8 @@ code file scroll) is delegated to its own sub-agent (Opus if available) working 
    thumbnail with an off-brand title). Send fixes back with SendMessage instead of redoing the work.
 
 ## Brief template (fill every bracket; the specifics are what make the result good)
+`[PY]` and `[skill]` are the `python` and `skill_dir` values from `.platform.json` (full paths, so the sub-agent
+runs the same commands on Mac, Linux and Windows).
 ```
 Build ONE short animated UI clip with HyperFrames: [what it shows]. It plays in an Instagram reel while [speaker]
 says "[line]", so it must look premium, realistic and readable on a phone.
@@ -29,7 +31,9 @@ Readable sizes: key text >= 24px at the size it will be shown.
 
 Timeline (seconds, locked to the voice, keep within ±0.05s): [beat list].
 
-HyperFrames rules: Node 22, `npx --yes hyperframes@0.8.34`, root div with data-composition-id/start/duration/
+HyperFrames rules: run it as `"[PY]" "[skill]/scripts/hf.py" <lint|snapshot|render ...>` from your folder (pinned
+hyperframes@0.8.34 with Node 22+, same command on Mac, Linux and Windows; in PowerShell put `&` in front), run
+build.py with "[PY]" and write index.html with encoding='utf-8', root div with data-composition-id/start/duration/
 width/height, paused GSAP timeline registered in window.__timelines["main"], gsap.set for initial states OUTSIDE the
 timeline, immediateRender:false on fromTo, no apostrophes in ids, no onUpdate text tricks (one span per typed
 character revealed with tl.set), lint 0 errors, snapshot and LOOK at the PNGs, then render. Never delete files.

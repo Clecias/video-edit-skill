@@ -6,7 +6,7 @@
 - 35px clear on the left and right.
 - Right 100px column clear from **y ~1155** down (like / comment / share icons).
 
-Check it, do not eyeball it: `SAFE=1 python3 build.py` draws the unsafe area in red (see `SAFE_GUIDE` in the template), snapshot 10-20 moments with it on, fix, then build WITHOUT it for the render (grep the html for `rgba(255,0,0,.28)` -> must be 0).
+Check it, do not eyeball it: `PY build.py --safe` draws the unsafe area in red (see `SAFE_GUIDE` in the template), snapshot 10-20 moments with it on, fix, then build WITHOUT it for the render (grep the html for `rgba(255,0,0,.28)` -> must be 0).
 
 ## Where things go
 - Lead-in caption lines: centred, chest band (y ~950-1300), in front of the speaker. Fine to sit over the body; never over the face (eyes to chin).

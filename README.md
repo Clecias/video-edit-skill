@@ -22,14 +22,22 @@ Film your talking-head clips on your phone, drop them in a folder, type `/video-
 
 ## Requirements
 
-- A Mac or Linux computer (Apple Silicon Macs are fastest for the background cutout)
+- A Mac, a Windows 10/11 PC or a Linux computer. Apple Silicon Macs are fastest for the background cutout; on Windows and Linux that one step runs on the processor, so it takes longer.
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code) installed and working
-- [ffmpeg](https://ffmpeg.org) (Mac: `brew install ffmpeg`)
+- [ffmpeg](https://ffmpeg.org)
 - [Node.js 22 or newer](https://nodejs.org)
 - Python 3.10 or newer ([python.org](https://www.python.org/downloads/))
 - Optional: an [Apify](https://apify.com) account (free tier works) to pull your reels and profile stats automatically
 
-Don't worry about connecting these manually. The skill walks you through everything on first run.
+Don't worry about connecting these manually. On first run the skill checks your computer, figures out whether it's a Mac, a PC or Linux, and gives you the exact line to paste for anything that's missing.
+
+| | Mac | Windows (PowerShell) | Linux |
+|---|---|---|---|
+| ffmpeg | `brew install ffmpeg` | `winget install --id Gyan.FFmpeg -e` | `sudo apt install ffmpeg` |
+| Node.js | `brew install node` | `winget install --id OpenJS.NodeJS.LTS -e` | [nodejs.org](https://nodejs.org) |
+| Python | `brew install python` | `winget install --id Python.Python.3.12 -e` | `sudo apt install python3 python3-venv` |
+
+**On Windows:** each line is one paste into PowerShell. After installing, close Claude Code completely and open it again, or it won't see the new programs. Git for Windows is optional (the skill works with or without it). On a Windows ARM laptop (Snapdragon), add `--architecture x64` to the Python line.
 
 ---
 
@@ -64,10 +72,10 @@ Hit Enter. On your first run, the skill asks your name, your Instagram handle an
 <details>
 <summary>Prefer the terminal? Manual install</summary>
 
-Open Terminal (Mac: `Command + Space`, type Terminal). Paste this one line and hit Enter:
+Open Terminal (Mac: `Command + Space`, type Terminal. Windows: Start menu, type PowerShell). Paste this one line and hit Enter (it needs [git](https://git-scm.com/downloads) installed):
 
 ```bash
-git clone https://github.com/tenfoldmarc/video-edit-skill ~/.claude/skills/video-edit
+git clone https://github.com/tenfoldmarc/video-edit-skill "$HOME/.claude/skills/video-edit"
 ```
 
 Then type `claude` to open Claude Code and run `/video-edit`.
@@ -106,7 +114,7 @@ Paste this into Claude:
 Update the video-edit skill from https://github.com/tenfoldmarc/video-edit-skill
 ```
 
-Or in Terminal: `cd ~/.claude/skills/video-edit && git pull`
+Or in Terminal / PowerShell: `git -C "$HOME/.claude/skills/video-edit" pull`
 
 ---
 
