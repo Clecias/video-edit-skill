@@ -1,20 +1,19 @@
 # Windows test checklist
 
-The skill has been built and run on a Mac. Every Windows code path was reviewed and unit-tested by simulation, but nobody has run it on a real PC yet. This checklist is that run: clean Windows machine to a rendered test reel. It takes 30 to 45 minutes, most of it waiting.
+The skill was built and run on a Mac. Windows support is new: the Windows code paths were reviewed and unit-tested by simulation, and this checklist is the real-machine run, from a clean Windows PC to a rendered test reel. It takes 30 to 45 minutes, most of it waiting.
 
-You do not need to be technical. Do the steps in order, tick the boxes, and when something fails, stop and send back what the "If it fails" line asks for.
+You do not need to be technical. Do the steps in order, tick the boxes, and when something fails, stop and report what the "If it fails" line asks for in a [GitHub issue](https://github.com/tenfoldmarc/video-edit-skill/issues).
 
 ## What you need
 
 - A Windows 10 or Windows 11 PC with about 10 GB of free disk space
 - A Claude plan that includes Claude Code (Pro or Max)
 - One vertical phone video of a person talking to the camera, 20 to 40 seconds, saved in your Downloads folder
-- The `video-edit` skill folder Marc sent you (a zip)
 
 ## Write these down first
 
 - [ ] Windows version: press `Windows + R`, type `winver`, Enter. Note the version and build.
-- [ ] Processor and RAM: Settings > System > About. Note "Processor" and "Installed RAM". (If the processor says Snapdragon or ARM, tell Marc before going on.)
+- [ ] Processor and RAM: Settings > System > About. Note "Processor" and "Installed RAM". (If the processor says Snapdragon or ARM, use the x64 Python line from the README in Step 2 and say so in your report.)
 
 ## Step 1: Install Claude Code
 
@@ -46,8 +45,8 @@ python --version
 
 ## Step 3: Put the skill in place
 
-- [ ] Unzip the skill. In File Explorer, click the address bar, paste `%USERPROFILE%\.claude` and press Enter. Open the `skills` folder (create it if it is not there) and move the `video-edit` folder into it.
-- [ ] Check: this file exists: `C:\Users\<you>\.claude\skills\video-edit\SKILL.md`
+- [ ] In the Code tab, paste `Install this skill for me: https://github.com/tenfoldmarc/video-edit-skill` and press Enter. Allow what it asks.
+- [ ] Check: in File Explorer, click the address bar, paste `%USERPROFILE%\.claude\skills\video-edit` and press Enter. The folder opens and contains `SKILL.md`.
 
 ## Step 4: Run the machine check by itself
 
@@ -129,6 +128,8 @@ Claude Code runs commands through PowerShell when Git for Windows is not install
 
 ## What to send back
 
+Open an issue at https://github.com/tenfoldmarc/video-edit-skill/issues with the items below. Issues are public: your Windows user name shows up in file paths, so replace it (and anything else private) before posting, and do not attach your video unless you are fine with it being public.
+
 1. Windows version, processor, RAM, and whether Git for Windows was installed.
 2. Everything printed in Step 4.
 3. The number of the first step that failed, if any, and a screenshot of what Claude showed.
@@ -136,5 +137,5 @@ Claude Code runs commands through PowerShell when Git for Windows is not install
    ```
    Write a file on my Desktop called video-edit-windows-report.txt with: every command you ran for /video-edit in this session, in order, and for each one that failed the full error text exactly as printed. Add the contents of .platform.json from the skill folder.
    ```
-5. The finished phone copy of the reel (or a note that it never got that far).
+5. Whether you got a finished reel and how it looked against the Step 8 boxes (a screenshot is enough).
 6. How long the background cutout took, and how long the reel is.
