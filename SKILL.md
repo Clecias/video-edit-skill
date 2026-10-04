@@ -16,7 +16,9 @@ placement, behind-head formula), `references/gotchas.md` (every trap already hit
 
 Look for `~/.claude/skills/video-edit/config.json`.
 
-**If it exists:** load it (name, instagram handle, default look, folders) and go to Step 1.
+**If it exists:** load it (name, instagram handle, default look, folders), run
+`zsh ~/.claude/skills/video-edit/scripts/setup.sh` (a few seconds: it only checks, and repairs the environment after
+an update), and go to Step 1 once it prints READY.
 
 **If it does not exist:**
 1. Say: "Welcome to /video-edit! Let's get you set up. This takes about 2 minutes and only happens once."

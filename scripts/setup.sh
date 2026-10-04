@@ -22,11 +22,20 @@ else
   echo "STATUS node MISSING or < 22 -> install Node 22 LTS from https://nodejs.org (or: nvm install 22)"; ok=0
 fi
 
+# Versions are pinned so a new upstream release cannot break installs. PyAV 19 (2026-09-29) removed the
+# `metadata_errors` argument that faster-whisper 1.2.1 still passes, so every transcription crashed on fresh installs.
+PINS=('faster-whisper==1.2.1' 'av>=11,<19' 'pillow')
 if [[ -x "$SKILL/.venv/bin/python" ]] && "$SKILL/.venv/bin/python" -c "import faster_whisper, PIL" 2>/dev/null; then
-  echo "STATUS python venv OK"
+  if "$SKILL/.venv/bin/python" -c "import av, sys; sys.exit(0 if int(av.__version__.split('.')[0]) < 19 else 1)" 2>/dev/null; then
+    echo "STATUS python venv OK"
+  else
+    echo "STATUS python venv: repairing (PyAV 19 breaks transcription, installing a supported version)"
+    "$SKILL/.venv/bin/pip" install -q $PINS \
+      && echo "STATUS python venv OK" || { echo "STATUS python venv FAILED (see pip output above)"; ok=0; }
+  fi
 elif command -v python3 >/dev/null; then
   echo "STATUS python venv: creating $SKILL/.venv (faster-whisper + Pillow, ~1 min)"
-  python3 -m venv "$SKILL/.venv" && "$SKILL/.venv/bin/pip" install -q --upgrade pip && "$SKILL/.venv/bin/pip" install -q faster-whisper pillow \
+  python3 -m venv "$SKILL/.venv" && "$SKILL/.venv/bin/pip" install -q --upgrade pip && "$SKILL/.venv/bin/pip" install -q $PINS \
     && echo "STATUS python venv OK" || { echo "STATUS python venv FAILED (see pip output above)"; ok=0; }
 else
   echo "STATUS python3 MISSING -> install Python 3.10+ from https://python.org"; ok=0

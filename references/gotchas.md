@@ -29,6 +29,8 @@
 - Node 22+ for HyperFrames (with nvm: `source ~/.nvm/nvm.sh && nvm use 22`), pin `npx --yes hyperframes@0.8.34`.
 - Python scripts run in the skill's own venv: `~/.claude/skills/video-edit/.venv/bin/python` (faster-whisper + Pillow).
   The first transcription downloads the Whisper model (small.en ~0.5GB, medium.en ~1.5GB).
+- Transcription dies with `open() got an unexpected keyword argument 'metadata_errors'`: the venv has PyAV 19, which
+  faster-whisper 1.2.1 does not support. Run `scripts/setup.sh` again; it pins `av<19` and repairs the venv.
 - zsh: `for x in "a b"; do set -- $x` does not split; use `${=x}` or a Python loop.
 - If a shell safety hook blocks inline heredoc scripts or moves into the Trash, write the script to a file and run
   it; download temp files into a scratch folder instead of moving things around. Never delete the user's files.
