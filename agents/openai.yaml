@@ -1,0 +1,7 @@
+interface:
+  display_name: "Edição de vídeo para Reels"
+  short_description: "Monta Reels em português do Brasil"
+  default_prompt: "Use $video-edit para editar meus clipes em um Reel vertical em português do Brasil."
+
+policy:
+  allow_implicit_invocation: true

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Claude desktop app recreation: drop 5 clips, type /video-edit, Claude works on it.
+"""Exemplo visual do Codex: cinco clipes são enviados e a skill $video-edit é usada.
 1000x720, transparent outside the rounded window, 4.35s @30fps.
 PY build.py  -> index.html      (PY = the skill's Python; any Python 3 works for this file)
 """
@@ -191,15 +191,15 @@ def build():
     A('<div id="umsg"><div id="uthumbs">')
     for i in range(CLIPS):
         A(f'<div class="ut"><img src="inputs/clip{i+1}.jpg" alt="">{PLAY}</div>')
-    A('</div><div id="ububble"><em>/video-edit</em></div></div>')
+    A('</div><div id="ububble"><em>$video-edit</em></div></div>')
     A(f'<div id="rhead">{spark(36, id_="rspark")}<div id="pill">{BOLT}<span>Using skill <b>video-edit</b></span></div></div>')
-    steps = ['Transcribing 5 clips', 'Picking the best takes', 'Cutting, captions, motion graphics', 'Rendering reel.mp4']
+    steps = ['Transcrevendo 5 clipes', 'Escolhendo as melhores tomadas', 'Criando cortes, legendas e movimento', 'Renderizando reel.mp4']
     for i, t in enumerate(steps):
         A(f'<div class="step" id="st{i}" style="top:{232 + i * 46}px"><div class="ico"><div class="spin" id="sp{i}"></div>'
           f'<div class="chk" id="ck{i}">{CHECK}</div></div><span>{t}</span></div>')
     A('<div id="ptrack"><div id="pfill"></div></div>')
     A(f'<div id="file"><div id="fthumb"><img src="inputs/clip3.jpg" alt="">{PLAY}</div>'
-      '<div class="t"><div class="n">reel.mp4</div><div class="m">0:26 &middot; <i>ready</i></div></div>'
+      '<div class="t"><div class="n">reel.mp4</div><div class="m">0:26 &middot; <i>pronto</i></div></div>'
       f'<div id="fchk">{CHECK.replace("28", "30")}</div></div>')
     A('</div></div><div id="convfade"></div>')
     # ---------- input
@@ -208,16 +208,16 @@ def build():
         A(f'<div class="chip" id="chip{i}"><img src="inputs/clip{i+1}.jpg" alt=""><div><div class="n">clip_0{i+1}</div>'
           f'<div class="m">MP4 video</div></div></div>')
     A('</div><div id="tline">')
-    A(''.join(f'<span class="ch" id="c{j}">{c}</span>' for j, c in enumerate('/video-edit'))
-      + '<span id="caret"></span><span id="ph">How can I help you today?</span><span id="ph2">Reply to Claude...</span></div>')
+    A(''.join(f'<span class="ch" id="c{j}">{c}</span>' for j, c in enumerate('$video-edit'))
+      + '<span id="caret"></span><span id="ph">O que vamos criar?</span><span id="ph2">Responder ao Codex...</span></div>')
     A(f'<div id="tbar"><div class="tb">{CLIP_ICON}</div><div class="tb">{SLIDERS}</div><div id="send">{ARROW_UP}</div></div>')
-    A(f'<div id="dropov">{UPLOAD}<span>Drop files here</span></div>')
+    A(f'<div id="dropov">{UPLOAD}<span>Solte os arquivos aqui</span></div>')
     A('</div>')
-    A('<div id="disc">Claude can make mistakes. Please double-check responses.</div>')
+    A('<div id="disc">O Codex pode cometer erros. Revise o resultado.</div>')
     # ---------- slash menu
     A('<div id="menu"><div class="hd">Skills</div>')
-    A('<div class="mrow on"><div class="mi">/</div><div><div class="nm">/video-edit</div>'
-      '<div class="ds">Edit raw clips into a finished reel</div></div><div class="kb">&#8629;</div></div>')
+    A('<div class="mrow on"><div class="mi">$</div><div><div class="nm">$video-edit</div>'
+      '<div class="ds">Transforma clipes em um Reel finalizado</div></div><div class="kb">&#8629;</div></div>')
     A('<div class="mrow dim"><div class="mi">/</div><div><div class="nm">/carousel</div><div class="ds">Turn an idea into a carousel</div></div></div>')
     A('<div class="mrow dim"><div class="mi">/</div><div><div class="nm">/script</div><div class="ds">Write a reel script in your voice</div></div></div>')
     A('</div>')

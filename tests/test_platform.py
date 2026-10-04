@@ -19,7 +19,7 @@ import setup  # noqa: E402
 import skillenv  # noqa: E402
 
 WIN_HOME = 'C:\\Users\\Pat Smith'
-WIN_SKILL = WIN_HOME + '\\.claude\\skills\\video-edit'
+WIN_SKILL = WIN_HOME + '\\.codex\\skills\\video-edit'
 WIN_ENV = {'LOCALAPPDATA': WIN_HOME + '\\AppData\\Local', 'ProgramFiles': 'C:\\Program Files'}
 
 
@@ -65,10 +65,10 @@ class Detect(unittest.TestCase):
 class Paths(unittest.TestCase):
     def test_venv_python_per_os(self):
         self.assertEqual(skillenv.venv_python(WIN_SKILL, 'windows'), WIN_SKILL + '\\.venv\\Scripts\\python.exe')
-        self.assertEqual(skillenv.venv_python('/Users/pat/.claude/skills/video-edit', 'macos'),
-                         '/Users/pat/.claude/skills/video-edit/.venv/bin/python')
-        self.assertEqual(skillenv.venv_python('/home/pat/.claude/skills/video-edit', 'linux'),
-                         '/home/pat/.claude/skills/video-edit/.venv/bin/python')
+        self.assertEqual(skillenv.venv_python('/Users/pat/.codex/skills/video-edit', 'macos'),
+                         '/Users/pat/.codex/skills/video-edit/.venv/bin/python')
+        self.assertEqual(skillenv.venv_python('/home/pat/.codex/skills/video-edit', 'linux'),
+                         '/home/pat/.codex/skills/video-edit/.venv/bin/python')
 
     def test_find_venv_python_takes_what_exists(self):
         with tempfile.TemporaryDirectory() as d:
@@ -80,7 +80,7 @@ class Paths(unittest.TestCase):
 
     def test_shell_path_is_paste_safe(self):
         p = skillenv.shell_path(skillenv.venv_python(WIN_SKILL, 'windows'))
-        self.assertEqual(p, 'C:/Users/Pat Smith/.claude/skills/video-edit/.venv/Scripts/python.exe')
+        self.assertEqual(p, 'C:/Users/Pat Smith/.codex/skills/video-edit/.venv/Scripts/python.exe')
         self.assertNotIn('\\', p)
         self.assertEqual(json.loads(json.dumps({'python': p}))['python'], p)   # no escaping surprises in the json
         self.assertEqual(skillenv.shell_path('/Users/pat/x'), '/Users/pat/x')
@@ -178,12 +178,12 @@ class Setup(unittest.TestCase):
     def test_windows_fixes_say_restart_and_never_brew(self):
         for what in ('ffmpeg', 'node', 'python', 'venv'):
             f = setup.fix(what, 'windows')
-            self.assertIn('reopen', f)
+            self.assertIn('reabra', f)
             self.assertNotIn('brew', f)
             self.assertNotIn('apt', f)
 
     def test_requirements_are_the_hotfix_pins(self):
-        self.assertEqual(setup.REQUIREMENTS, ['faster-whisper==1.2.1', 'av>=11,<19', 'pillow'])
+        self.assertEqual(setup.REQUIREMENTS, ['faster-whisper==1.2.1', 'av>=11,<19', 'pillow>=10,<12'])
 
     def test_python_39_is_not_refused(self):
         self.assertEqual(skillenv.OLDEST_PY, (3, 9))   # system Python on many Macs; the old setup.sh accepted it

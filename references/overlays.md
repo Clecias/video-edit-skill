@@ -1,16 +1,16 @@
-# UI recreations and animated inserts (built by parallel sub-agents)
+# Inserts animados e recriações de interface
 
-The main session owns the cut, grade, captions and integration; each animated insert (app recreation, social UI,
-code file scroll) is delegated to its own sub-agent (Opus if available) working in its own folder, in parallel.
+A sessão principal controla corte, cor, legendas e integração. Quando o usuário tiver autorizado delegação e houver
+orquestração multiagente disponível, cada insert pode ser delegado a um agente em uma pasta isolada. Caso contrário,
+produza os inserts sequencialmente.
 
 ## Pattern
 1. Lock the insert's timing to the speaker's words first (word timings from transcribe_cut.py / the clip's words json).
    Convert to the insert's own clock: insert t=0 at a known source moment, every beat = word time - that moment.
-2. Spawn one sub-agent per insert (Agent tool, `model: opus`, `run_in_background: true`), all in parallel.
+2. Delegue no máximo um insert por agente, sem exigir modelo ou ferramenta específica.
 3. Each agent builds a standalone HyperFrames project in `<project>/agents/<name>/` and renders a TRANSPARENT VP9 WebM
    at a fixed size and duration. The main build places it with a wrapper div (position/scale/tilt) and a timed `<video>`.
-4. When an agent reports back, read its notes (things it flags as "might look off" are usually real, e.g. a grid
-   thumbnail with an off-brand title). Send fixes back with SendMessage instead of redoing the work.
+4. Revise o resultado e os alertas do agente antes de integrar. Solicite correções no mesmo escopo quando necessário.
 
 ## Brief template (fill every bracket; the specifics are what make the result good)
 `[PY]` and `[skill]` are the `python` and `skill_dir` values from `.platform.json` (full paths, so the sub-agent
@@ -42,8 +42,8 @@ Report back: path, exact duration, alpha confirmed, actual beat times (for sound
 ```
 
 ## Example inserts (assets/overlay-examples/ has their index.html / build.py)
-- **claude-desktop** (1000x720, 4.35s): Claude desktop light theme, 5 clip thumbnails dragged into the input with a
-  count badge, `/video-edit` typed with a slash-command menu, Claude reply with a "Using skill" pill and a checklist
+- **claude-desktop** (nome legado da pasta, 1000x720, 4.35s): interface genérica inspirada no Codex, cinco miniaturas
+  levadas ao campo de entrada, `$video-edit` digitado e checklist de processamento
   ending in a "reel.mp4 · ready" file card. Placed on the wall BEHIND the speaker (z between base video and cutout).
 - **ig-follow** (760x1000, 2.9s): the creator's IG profile in dark mode (profile pic, verified badge, posts /
   followers / following, bio, post grid from their reels), a touch dot taps Follow at 0.70s (button -> Following),
@@ -54,10 +54,9 @@ Report back: path, exact duration, alpha confirmed, actual beat times (for sound
   scroll on a wrapper `y`, a line glow as a section passes. Scaled .72 with a slight rotateX tilt under the face.
 
 ## Creator reels as cards
-Instagram: Apify's official Instagram scraper (pay-per-use; currently `apify/instagram-scraper` with `directUrls`
-and `resultsType: posts`) returns a `videoUrl` you can curl. Pinterest pins: the pin page HTML contains
-`v1.pinimg.com/videos/.../*_720w.mp4`. Transcribe to pick the 2-3s that match the line. Trim to 260x462 tiles,
-muted, `-g 30`. Always show the @handle.
+Use somente arquivos fornecidos pelo usuário ou uma integração já configurada e aprovada. Não extraia URLs internas,
+não contorne bloqueios da plataforma e não use `curl` para capturar mídia protegida. Sempre mostre o @arroba e confirme
+o direito de reutilização antes de recortar os trechos.
 
 The creator's own reels (for the orbit, the profile grid): Apify's official Instagram post scraper with the handle
 from config.json, 6 reels, trim each to 300x534 muted tiles. Without Apify, ask the user to drop 6 of their reels

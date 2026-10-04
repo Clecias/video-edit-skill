@@ -8,6 +8,6 @@ for py in python3 python; do
   # run it once first: on Windows `python3` can be a Store stub that exists but is not a Python
   if "$py" -c "import sys" >/dev/null 2>&1; then exec "$py" "$here/setup.py" "$@"; fi
 done
-echo "STATUS python MISSING -> install Python 3.10+ (Mac: brew install python | Linux: sudo apt install python3 python3-venv | Windows: winget install --id Python.Python.3.12 -e)"
+echo "STATUS python AUSENTE -> instale Python 3.10+ somente após revisar e aprovar o comando do seu sistema"
 echo "NOT READY"
 exit 1

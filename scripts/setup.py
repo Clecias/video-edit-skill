@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""/video-edit first-run checks, for macOS, Linux (and WSL) and Windows. Safe to re-run: it only reports and fills
-in what is missing. Standard library only, because it runs before the skill's own Python environment exists.
+"""Verifica e, somente com opção explícita, prepara o ambiente da skill video-edit.
 
 Run it with whichever Python the machine has:   python3 setup.py   |   python setup.py   |   py -3 setup.py
 
@@ -27,7 +26,7 @@ import skillenv  # noqa: E402
 
 SFX_NAMES = ['whoosh-short', 'pop', 'sparkle', 'click', 'click-soft', 'impact-bass-1']
 SFX_URL = 'https://raw.githubusercontent.com/heygen-com/hyperframes/main/skills/media-use/audio/assets/sfx'
-RESTART = 'then quit Claude Code completely, reopen it and run /video-edit again'
+RESTART = 'depois feche o Codex completamente, reabra e use $video-edit novamente'
 
 
 def fix(what, osn):
@@ -73,9 +72,9 @@ def check_ffmpeg(osn):
         where = os.path.dirname(found['ffmpeg'][0])
         if osn == 'windows':
             say(f'STATUS ffmpeg INSTALLED BUT NOT VISIBLE YET (found in {where}) -> this session started before it was '
-                f'installed: quit Claude Code completely, reopen it and run /video-edit again')
+                f'instalado: feche o Codex completamente, reabra e use $video-edit novamente')
         else:
-            say(f'STATUS ffmpeg NOT ON PATH (found in {where}) -> add that folder to your PATH, then reopen Claude Code')
+            say(f'STATUS ffmpeg FORA DO PATH (encontrado em {where}) -> adicione a pasta ao PATH e reabra o Codex')
         return False, None, None
     say(f"STATUS ffmpeg MISSING -> {fix('ffmpeg', osn)}")
     return False, None, None
@@ -114,7 +113,7 @@ def base_python():
 # Versions are pinned so a new upstream release cannot break installs (same pins as the setup.sh hotfix). PyAV 19
 # (2026-09-29) removed the `metadata_errors` argument that faster-whisper 1.2.1 still passes, so every transcription
 # crashed on fresh installs. A venv that already has PyAV 19 fails the self-test below and is repaired in place.
-REQUIREMENTS = ['faster-whisper==1.2.1', 'av>=11,<19', 'pillow']
+REQUIREMENTS = ['faster-whisper==1.2.1', 'av>=11,<19', 'pillow>=10,<12']
 # imports alone did not catch the PyAV break: decode a tenth of a second of silence the way a transcription does
 VENV_SELFTEST = r'''
 import os, tempfile, wave
@@ -142,7 +141,7 @@ def tail(text, n=12):
     return '\n'.join('        ' + l for l in (text or '').strip().splitlines()[-n:])
 
 
-def check_python(info):
+def check_python(info, install=False):
     osn = info['os']
     py = skillenv.find_venv_python(skillenv.SKILL_DIR, osn)
     if venv_ok(py):
@@ -152,6 +151,10 @@ def check_python(info):
     if not base:
         say(f"STATUS python MISSING or too old (this is {ver[0]}.{ver[1]}, need 3.10+) -> {fix('python', osn)}")
         return False, None
+    if not install:
+        say('STATUS python venv AUSENTE ou com problema -> requer aprovação para instalar: '
+            'execute novamente com --install')
+        return False, py
     if osn == 'windows' and info['python_arch'] == 'arm64':
         say('STATUS python venv CANNOT BE BUILT with this ARM64 Python (the transcription engine has no Windows ARM '
             f'build) -> install the x64 Python: winget install --id Python.Python.3.12 -e --architecture x64   ({RESTART})')
@@ -168,7 +171,6 @@ def check_python(info):
             say(tail(r.stdout + r.stderr))
             return False, None
     # `python -m pip`, not the pip script: on Windows pip.exe cannot replace itself while it is running
-    subprocess.run([py, '-m', 'pip', 'install', '-q', '--upgrade', 'pip'], **skillenv.TEXT)
     r = subprocess.run([py, '-m', 'pip', 'install', '-q'] + REQUIREMENTS, **skillenv.TEXT)
     if r.returncode == 0 and venv_ok(py):
         say('STATUS python venv OK')
@@ -197,37 +199,46 @@ def fetch(url, dest):
     return False
 
 
-def check_sfx():
+def check_sfx(download=False):
     sfx = os.path.join(skillenv.SKILL_DIR, 'assets', 'template', 'assets', 'sfx')
-    os.makedirs(sfx, exist_ok=True)
 
     def have(n):
         p = os.path.join(sfx, n + '.mp3')
         return os.path.isfile(p) and os.path.getsize(p) > 0
 
-    home = os.path.expanduser('~')
-    for lib in (os.path.join(home, '.claude', 'skills', 'media-use', 'audio', 'assets', 'sfx'),
-                os.path.join(home, '.agents', 'skills', 'media-use', 'audio', 'assets', 'sfx')):
+    if download:
+        os.makedirs(sfx, exist_ok=True)
+        home = os.path.expanduser('~')
+        for lib in (os.path.join(home, '.codex', 'skills', 'media-use', 'audio', 'assets', 'sfx'),
+                    os.path.join(home, '.agents', 'skills', 'media-use', 'audio', 'assets', 'sfx')):
+            for n in SFX_NAMES:
+                src = os.path.join(lib, n + '.mp3')
+                if not have(n) and os.path.isfile(src):
+                    shutil.copyfile(src, os.path.join(sfx, n + '.mp3'))
+        # Download sem hash: permitido apenas após aprovação explícita via --download-sfx.
         for n in SFX_NAMES:
-            src = os.path.join(lib, n + '.mp3')
-            if not have(n) and os.path.isfile(src):
-                shutil.copyfile(src, os.path.join(sfx, n + '.mp3'))
-    # not found locally: fetch them from the HyperFrames repo, which publishes this Pixabay-licensed pack
-    for n in SFX_NAMES:
-        if not have(n):
-            fetch(f'{SFX_URL}/{n}.mp3', os.path.join(sfx, n + '.mp3'))
+            if not have(n):
+                fetch(f'{SFX_URL}/{n}.mp3', os.path.join(sfx, n + '.mp3'))
     missing = [n for n in SFX_NAMES if not have(n)]
     if not missing:
         say('STATUS sound effects OK')
     else:
-        say(f"STATUS sound effects MISSING: {' '.join(missing)} -> optional. Download similar free SFX from https://pixabay.com/sound-effects/")
-        say(f'        and save them as {os.path.join(sfx, "<name>.mp3")}, then re-run this script.')
+        say(f"STATUS efeitos sonoros AUSENTES: {' '.join(missing)} -> opcionais")
+        say('        Para baixar do repositório HyperFrames sem verificação de hash, obtenha aprovação e use --download-sfx.')
     return not missing
 
 
 # ------------------------------------------------------------------ main
 def main():
     skillenv.utf8_stdio()
+    args = set(sys.argv[1:])
+    unknown = args - {'--check', '--install', '--download-sfx'}
+    if unknown:
+        raise SystemExit('Opção desconhecida: ' + ', '.join(sorted(unknown)))
+    install = '--install' in args
+    download_sfx = '--download-sfx' in args
+    if download_sfx and not install:
+        raise SystemExit('--download-sfx exige --install para deixar a intenção explícita.')
     info = skillenv.detect()
     osn = info['os']
     provider = skillenv.cutout_provider(info)
@@ -236,8 +247,8 @@ def main():
 
     ff_ok, ffmpeg, ffprobe = check_ffmpeg(osn)
     node_ok, node, node_ver, npx = check_node(osn)
-    py_ok, py = check_python(info)
-    sfx_ok = check_sfx()
+    py_ok, py = check_python(info, install=install)
+    sfx_ok = check_sfx(download=download_sfx)
     ready = ff_ok and node_ok and py_ok
 
     sp = skillenv.shell_path

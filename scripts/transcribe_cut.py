@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Word timings for the assembled cut -> <project>/words.json (medium.en; these drive every caption).
 
-Usage:  PY transcribe_cut.py <project_dir> ["prompt with names: Claude, Claude Code, skill"]
-Whisper mishears proper nouns ("Claude" -> "cloud"/"claws", "skill" -> "scale", "design" -> "this line"):
+Uso: PY transcribe_cut.py <projeto> ["nomes e termos importantes: Codex, skill"]
+O Whisper pode errar nomes próprios e termos técnicos:
 pass them in the prompt and still fix captions by hand from what the speaker actually said.
 """
 import json
@@ -19,7 +19,7 @@ skillenv.utf8_stdio()
 proj = skillenv.path_arg(sys.argv[1])
 wav = os.path.join(proj, 'work', 'aroll.wav')
 os.makedirs(os.path.join(proj, 'work'), exist_ok=True)
-prompt = sys.argv[2] if len(sys.argv) > 2 else 'Claude, Claude Code, skill.'
+prompt = sys.argv[2] if len(sys.argv) > 2 else 'Codex, skill, edição de vídeo, Reel.'
 subprocess.run([skillenv.tool('ffmpeg'), '-loglevel', 'error', '-y', '-i', os.path.join(proj, 'assets', 'aroll.mp4'), '-vn', '-ac', '1',
                 '-ar', '16000', wav], check=True)
 m = WhisperModel('medium.en', compute_type='int8')

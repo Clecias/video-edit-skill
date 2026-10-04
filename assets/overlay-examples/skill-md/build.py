@@ -21,41 +21,41 @@ VIEW_H = HT - HEAD
 
 SRC = """---
 name: video-edit
-description: Turn raw talking-head clips into a finished Instagram reel. Picks the best takes, cuts filler, adds captions, motion graphics and sound, in the creator's chosen aesthetic.
+description: Transforma clipes falados em um Reel finalizado, com cortes, legendas, movimento e som.
 ---
 
-# Video Edit
+# Edição de vídeo
 
-Drop your raw clips in a folder and run `/video-edit`.
+Indique os clipes e use `$video-edit`.
 
-## Workflow
-1. Transcribe every clip with word-level timestamps
-2. Find the cleanest take of each line, cut false starts and filler
-3. Assemble the cut at `1080x1920`, punch-ins from 4K
-4. Cut the creator out of the background (for text behind them)
-5. Apply the aesthetic, captions and motion graphics
-6. Add sound design, render, check every cut frame by frame
+## Fluxo
+1. Transcrever os clipes com marcação por palavra
+2. Escolher a melhor tomada de cada frase
+3. Montar em `1080x1920`
+4. Recortar a pessoa do fundo
+5. Aplicar estilo, legendas e movimento
+6. Renderizar e revisar cada corte
 
-## Aesthetics
-- **cool girl**: warm faded grade, lowercase sans + big serif italic in butter yellow `#FAE67A`, handwritten notes, sparkles
-- **cool dude**: dark moody grade, tiny wide-tracked caps + heavy serif punch words
-- **bold**: heavy lowercase words scattered around the speaker, big words behind the head
+## Estilos
+- **quente**: cores suaves e serifada amarela `#FAE67A`
+- **editorial**: ambiente escuro e tipografia marcante
+- **impacto**: palavras cinéticas ao redor da pessoa
 
-## Tools
-- `whisper` for word-level transcripts
-- `ffmpeg` for cuts, grades and the final render
-- `hyperframes` for captions and motion graphics
+## Ferramentas
+- `whisper` para transcrição
+- `ffmpeg` para cortes e render
+- `hyperframes` para legendas e movimento
 
-## Rules
-- Never cover the face
-- Captions inside Instagram safe zones
-- Words land on the exact spoken frame
-- Sound effects subtle, never louder than the voice
+## Regras
+- Nunca cobrir o rosto
+- Manter legendas na área segura
+- Sincronizar palavras com a fala
+- Manter efeitos abaixo da voz
 
-## Output
+## Saída
 - `reel.mp4`, 1080x1920, 30fps
-- a phone-size preview for quick review
-- an edit log with every cut and why
+- prévia para celular
+- relatório dos cortes
 """
 
 
@@ -181,8 +181,8 @@ def build():
     thumb_travel = track_h - thumb_h
 
     name_row = marks['fm-name'][0]
-    dude_row, dude_n = marks['li-cool-dude']
-    aes_row = marks['h-aesthetics'][0]
+    dude_row, dude_n = marks['li-editorial']
+    aes_row = marks['h-estilos'][0]
     # time when Aesthetics heading crosses mid-viewport (power2.inOut 0.45 -> 1.95)
     import math
     target = PAD_T + aes_row * LH + LH / 2 - VIEW_H / 2
@@ -259,7 +259,7 @@ html,body{{width:{W}px;height:{HT}px;overflow:hidden;background:transparent}}
     A('<div id="tbar"><div id="lights"><i style="background:#FF5F57"></i><i style="background:#FEBC2E"></i><i style="background:#28C840"></i></div>')
     A(f'<div id="tab">{MD}<span>SKILL.md</span><span class="x">&times;</span></div>')
     A(f'<div id="tright">{SPLIT}{DOTS}</div></div>')
-    A('<div id="crumb"><span>.claude</span><span class="s">/</span><span>skills</span><span class="s">/</span>'
+    A('<div id="crumb"><span>.codex</span><span class="s">/</span><span>skills</span><span class="s">/</span>'
       '<span>video-edit</span><span class="s">/</span><span class="e">SKILL.md</span></div>')
     A('<div id="view"><div id="code">')
     A('<div id="hl"></div><div id="hlbar"></div><div id="dude"></div><div id="dudebar"></div>')

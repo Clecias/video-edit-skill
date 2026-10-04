@@ -38,16 +38,16 @@
 - If a shell safety hook blocks inline heredoc scripts or moves into the Trash, write the script to a file and run
   it; download temp files into a scratch folder instead of moving things around. Never delete the user's files.
 - Large file uploads to chat can fail: deliver a 720p crf 26-28 phone copy and keep the full render on disk.
-- Pinterest/Instagram pages block logged-out browsing; curl the page HTML or use Apify.
+- Não contorne bloqueios de Pinterest ou Instagram. Use arquivos autorizados pelo usuário ou uma integração aprovada.
 
 ## Windows (same skill, different shell)
-- Claude Code on Windows runs commands in Git Bash when Git for Windows is installed, otherwise in PowerShell, and
-  both can be available at once. Write commands that work in both: full paths in double quotes with forward
+- O Codex pode executar comandos por PowerShell ou Git Bash no Windows. Escreva comandos compatíveis com ambos: caminhos
+  absolutos entre aspas duplas e barras normais,
   slashes, one command per call, no `&&`, no `VAR=1 cmd`, no `~` in arguments. In PowerShell start a quoted program
   with `&`: `& "PY" "SK/scripts/assemble.py" "<project>"`.
 - `python3` is usually a Microsoft Store stub ("Python was not found"). Use `PY` for everything. Before the venv
   exists, try `python`, then `py -3`.
-- A program installed while Claude Code is open is not found until Claude Code is fully quit and reopened (it keeps
+- Um programa instalado enquanto o Codex está aberto pode exigir que o Codex seja fechado e reaberto (a sessão mantém
   the PATH it started with). setup.py says so when it sees ffmpeg installed but not visible.
 - `npx` is `npx.cmd` there: Python cannot start it by bare name. `HF` and cutout.py start it through node directly.
 - The background cutout has no GPU path on Windows (HyperFrames uses CoreML on Apple Silicon only, CUDA only with
