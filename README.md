@@ -37,6 +37,8 @@ Don't worry about connecting these manually. On first run the skill checks your 
 | Node.js | `brew install node` | `winget install --id OpenJS.NodeJS.LTS -e` | [nodejs.org](https://nodejs.org) |
 | Python | `brew install python` | `winget install --id Python.Python.3.12 -e` | `sudo apt install python3 python3-venv` |
 
+**Windows support is new.** The skill was built and tested on a Mac, and Windows has not had that level of real-world testing yet. If something breaks on your PC, please [open an issue](https://github.com/tenfoldmarc/video-edit-skill/issues) with the error text and the `STATUS` lines the setup printed.
+
 **On Windows:** each line is one paste into PowerShell. After installing, close Claude Code completely and open it again, or it won't see the new programs. Git for Windows is optional (the skill works with or without it). On a Windows ARM laptop (Snapdragon), add `--architecture x64` to the Python line.
 
 ---
