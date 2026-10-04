@@ -26,7 +26,8 @@ SKILL_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PLATFORM_FILE = os.path.join(SKILL_DIR, '.platform.json')
 HYPERFRAMES = 'hyperframes@0.8.34'
 MIN_NODE = 22
-MIN_PY = (3, 10)
+MIN_PY = (3, 10)      # what the README asks for
+OLDEST_PY = (3, 9)    # what the pinned packages still install on (the system Python of many Macs); never refused
 SCHEMA = 1
 # subprocess.run(..., **TEXT): capture output as UTF-8 text. Plain text mode decodes with the Windows code page
 # (cp1252) and crashes on ffmpeg printing a file name like "Angel" with an accented A.
@@ -209,13 +210,35 @@ def _node_version(node):
         return ''
 
 
-def find_node(osn=None):
-    """-> (node path or None, version text, on_path). The node on PATH wins when it is new enough. Otherwise look in
-    nvm / Homebrew / the Windows installer folder (nvm users often default to an older one) and take Node 22 if it
-    is there (what `nvm use 22` did, and the version this skill was built on), else the newest."""
+def nvm_node22(environ=None, home=None):
+    """-> (node path, version text) of the newest Node 22 installed with nvm, or (None, ''). This is exactly what the
+    old zsh scripts selected with `nvm use 22`, whatever the default Node was."""
+    environ = os.environ if environ is None else environ
+    home = home or os.path.expanduser('~')
+    found = []
+    for root in dict.fromkeys([environ.get('NVM_DIR') or '', os.path.join(home, '.nvm')]):
+        for cand in glob.glob(os.path.join(root, 'versions', 'node', 'v22.*', 'bin', 'node')) if root else []:
+            v = _node_version(cand)
+            if node_major(v) == 22:
+                found.append((tuple(int(x) for x in re.findall(r'\d+', v)[:3]), cand, v))
+    if not found:
+        return None, ''
+    _, cand, v = max(found)
+    return cand, v
+
+
+def find_node(osn=None, environ=None, home=None):
+    """-> (node path or None, version text, on_path).
+    macOS / Linux with nvm: nvm's Node 22 first, as `nvm use 22` did before (same Node as the zsh scripts used).
+    Otherwise the node on PATH when it is new enough. Otherwise look in Homebrew / the Windows installer folder /
+    other version managers and take Node 22 if it is there, else the newest."""
     osn = osn or os_name()[0]
     best = (None, '', False)
     p = shutil.which('node')
+    if osn != 'windows':
+        cand, v = nvm_node22(environ, home)
+        if cand:
+            return cand, v, bool(p) and os.path.realpath(p) == os.path.realpath(cand)
     if p:
         v = _node_version(p)
         if node_major(v) >= MIN_NODE:

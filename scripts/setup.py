@@ -98,19 +98,23 @@ def check_node(osn):
 
 # ------------------------------------------------------------------ 3. python + venv
 def base_python():
-    """The interpreter to build the venv with: this one when it is 3.10+, otherwise a newer one on PATH."""
+    """The interpreter to build the venv with: this one when it is 3.10+, otherwise a newer one on PATH, otherwise
+    this one anyway when it is 3.9 (the old setup.sh used whatever `python3` was, and 3.9 still works)."""
     if sys.version_info[:2] >= skillenv.MIN_PY:
         return sys.executable, sys.version_info[:2]
     for minor in range(14, 9, -1):
         p = shutil.which(f'python3.{minor}')
         if p:
             return p, (3, minor)
+    if sys.version_info[:2] >= skillenv.OLDEST_PY:
+        return sys.executable, sys.version_info[:2]
     return None, sys.version_info[:2]
 
 
-# av<19: PyAV 19 (released 2026-09-29) dropped the `metadata_errors` argument that faster-whisper 1.2.1 still passes,
-# so a fresh install crashed on the first transcription. Drop the pin once faster-whisper supports PyAV 19.
-REQUIREMENTS = ['faster-whisper', 'pillow', 'av<19']
+# Versions are pinned so a new upstream release cannot break installs (same pins as the setup.sh hotfix). PyAV 19
+# (2026-09-29) removed the `metadata_errors` argument that faster-whisper 1.2.1 still passes, so every transcription
+# crashed on fresh installs. A venv that already has PyAV 19 fails the self-test below and is repaired in place.
+REQUIREMENTS = ['faster-whisper==1.2.1', 'av>=11,<19', 'pillow']
 # imports alone did not catch the PyAV break: decode a tenth of a second of silence the way a transcription does
 VENV_SELFTEST = r'''
 import os, tempfile, wave

@@ -182,8 +182,40 @@ class Setup(unittest.TestCase):
             self.assertNotIn('brew', f)
             self.assertNotIn('apt', f)
 
-    def test_requirements_pin_pyav(self):
-        self.assertIn('av<19', setup.REQUIREMENTS)
+    def test_requirements_are_the_hotfix_pins(self):
+        self.assertEqual(setup.REQUIREMENTS, ['faster-whisper==1.2.1', 'av>=11,<19', 'pillow'])
+
+    def test_python_39_is_not_refused(self):
+        self.assertEqual(skillenv.OLDEST_PY, (3, 9))   # system Python on many Macs; the old setup.sh accepted it
+
+
+@unittest.skipIf(os.name == 'nt', 'nvm (the shell tool) is macOS / Linux only')
+class NvmParity(unittest.TestCase):
+    """The old zsh scripts ran `nvm use 22`. Mac users with nvm must get that same Node, whatever their default is."""
+
+    def fake_node(self, home, version):
+        d = os.path.join(home, '.nvm', 'versions', 'node', 'v' + version, 'bin')
+        os.makedirs(d)
+        p = os.path.join(d, 'node')
+        with open(p, 'w', encoding='utf-8') as f:
+            f.write(f'#!/bin/sh\necho v{version}\n')
+        os.chmod(p, 0o755)
+        return p
+
+    def test_newest_nvm_22_is_picked(self):
+        with tempfile.TemporaryDirectory() as home:
+            self.fake_node(home, '20.20.2')
+            self.fake_node(home, '22.3.0')
+            want = self.fake_node(home, '22.23.2')
+            self.fake_node(home, '24.1.0')
+            self.assertEqual(skillenv.nvm_node22({}, home), (want, 'v22.23.2'))
+            node, ver, _ = skillenv.find_node('macos', {}, home)
+            self.assertEqual((node, ver), (want, 'v22.23.2'))
+
+    def test_no_nvm_22_means_no_override(self):
+        with tempfile.TemporaryDirectory() as home:
+            self.fake_node(home, '20.20.2')
+            self.assertEqual(skillenv.nvm_node22({}, home), (None, ''))
 
     def test_sfx_list(self):
         self.assertEqual(len(setup.SFX_NAMES), 6)

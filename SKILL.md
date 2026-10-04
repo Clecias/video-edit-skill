@@ -141,7 +141,9 @@ docstring lists which is which).
   drop into `assets/reels/`).
 - Iterate from the project folder: `HF lint` (0 errors), then `PY build.py --safe`, then
   `HF snapshot --at <10-20 moments> --no-end --describe false`. Read the contact sheets, fix layout, readability
-  and safe zone. (`HF` picks a Node 22+ by itself, so there is no `nvm use`.)
+  and safe zone. (`HF` picks the right Node by itself, so there is no `nvm use`.)
+  A build.py copied from an older version of this skill ignores `--safe`: if the red guide is missing from the
+  snapshots, build that project the old way, `SAFE=1 "PY" build.py` (such projects only exist on Mac and Linux).
 
 ### 7. Render and QA
 ```bash
