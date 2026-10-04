@@ -15,18 +15,25 @@ Machinery to keep: dude_words(), cards(), girl(), orbit(), core(), claude_window
 grades(), audio(), SAFE_GUIDE, cut times from segments.json, S(t).
 Content to rewrite: GROUPS, CARDS, GIRL_BLOCKS, TRACK, SERIF, overlay files + in-times, SFX, SHIFT reference times.
 
-python3 build.py            writes index.html
-SAFE=1 python3 build.py     same + red Instagram safe-zone guide (snapshots only, never render with it)
+Run from the project folder with PY, the skill's Python (see SKILL.md):
+PY build.py            writes index.html
+PY build.py --safe     same + red Instagram safe-zone guide (snapshots only, never render with it)
+                       (`SAFE=1 python3 build.py` still works in bash/zsh; --safe also works in PowerShell)
 """
 import json
 import math
 import os
+import shutil
 import subprocess
+import sys
 
-DUR = float(subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries',
-                            'stream=duration', '-of', 'csv=p=0', 'assets/aroll.mp4'], capture_output=True, text=True).stdout)
+SAFE = '--safe' in sys.argv or bool(os.environ.get('SAFE'))
+DUR = float(subprocess.run([shutil.which('ffprobe') or 'ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries',
+                            'stream=duration', '-of', 'csv=p=0', 'assets/aroll.mp4'],
+                           capture_output=True, encoding='utf-8', errors='replace').stdout.strip().split(',')[0])
 YEL = '#FAE67A'
-SEG = {s['id']: s for s in json.load(open('segments.json'))}
+with open('segments.json', encoding='utf-8') as _f:
+    SEG = {s['id']: s for s in json.load(_f)}
 # cut times = exact first frame of each segment, nudged 2ms early so a tl.set lands ON that frame
 T = {k: s['frame'] / 30 - .002 if s['frame'] else 0.0 for k, s in SEG.items()}
 CUTS = [T['course'], T['girl'], T['dude'], T['tech'], T['cta']]
@@ -418,7 +425,7 @@ html,body{{width:1080px;height:1920px;overflow:hidden;background:#000}}
 '''
 
 
-# SAFE=1 python3 build.py: draws the Instagram safe zone (red = UI covers it) for snapshot checks, never for renders
+# PY build.py --safe: draws the Instagram safe zone (red = UI covers it) for snapshot checks, never for renders
 SAFE_GUIDE = ('<div style="position:absolute;inset:0;z-index:99;pointer-events:none">'
               '<div style="position:absolute;left:0;right:0;top:0;height:220px;background:rgba(255,0,0,.28)"></div>'
               '<div style="position:absolute;left:0;right:0;top:1470px;bottom:0;background:rgba(255,0,0,.28)"></div>'
@@ -468,7 +475,7 @@ def build():
 {nl.join(g_html)}
 {nl.join(s_html)}
 {nl.join(sk_html)}
-{SAFE_GUIDE if os.environ.get('SAFE') else ''}
+{SAFE_GUIDE if SAFE else ''}
 {nl.join(ig_html)}
 </div>
 <script>
@@ -482,5 +489,7 @@ window.__timelines["main"] = tl;
 '''
 
 
-open('index.html', 'w').write(build())
+# utf-8 on every OS: the page declares charset UTF-8, and Windows would otherwise write cp1252 (broken accents, emoji)
+with open('index.html', 'w', encoding='utf-8', newline='\n') as _f:
+    _f.write(build())
 print(f'wrote index.html {DUR:.3f}s  cuts {[round(c, 3) for c in CUTS]}  claude@{CLAUDE_IN:.3f}  ig@{IG_IN:.3f}')

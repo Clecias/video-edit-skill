@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Claude desktop app recreation: drop 5 clips, type /video-edit, Claude works on it.
 1000x720, transparent outside the rounded window, 4.35s @30fps.
-python3 build.py  -> index.html
+PY build.py  -> index.html      (PY = the skill's Python; any Python 3 works for this file)
 """
 import math
 
@@ -335,7 +335,8 @@ def build():
 </body>
 </html>
 """
-    open('index.html', 'w').write(html)
+    with open('index.html', 'w', encoding='utf-8', newline='\n') as f:   # utf-8 on every OS (Windows defaults to cp1252)
+        f.write(html)
     print('wrote index.html')
 
 

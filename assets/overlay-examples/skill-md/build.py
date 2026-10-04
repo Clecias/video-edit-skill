@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """SKILL.md in a dark code editor, smooth scroll top -> near bottom.
 860x1000, transparent outside the rounded window, 2.15s @30fps.
-python3 build.py  -> index.html
+PY build.py  -> index.html      (PY = the skill's Python; any Python 3 works for this file)
 """
 import re
 import html as H
@@ -317,7 +317,8 @@ html,body{{width:{W}px;height:{HT}px;overflow:hidden;background:transparent}}
 </body>
 </html>
 """
-    open('index.html', 'w').write(page)
+    with open('index.html', 'w', encoding='utf-8', newline='\n') as f:   # utf-8 on every OS (Windows defaults to cp1252)
+        f.write(page)
     print('wrote index.html')
 
 
